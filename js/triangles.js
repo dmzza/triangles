@@ -767,33 +767,34 @@ FSS.Plane = function(width, height, howmany) {
   this.height = height || 100;
 
   // Cache Variables
-  var x, y, vertices = new Array(howmany);
+  var x, y, vertices = new Array(50); //howmany);
     offsetX = this.width * -0.5,
     offsetY = this.height * 0.5;
 
   for(i = vertices.length; i--; ) {
     x =  offsetX + Math.random()*width;
     y =  offsetY - Math.random()*height;
+    z =  Math.random()*width;
 
-    vertices[i] = [x, y];
+    vertices[i] = [x, y, z];
   }
 
   // Generate additional points on the perimeter so that there are no holes in the pattern
-  vertices.push([offsetX, offsetY]);
-  vertices.push([offsetX + width/2, offsetY]);
-  vertices.push([offsetX + width, offsetY]);
-  vertices.push([offsetX + width, offsetY - height/2]);
-  vertices.push([offsetX + width, offsetY - height]);
-  vertices.push([offsetX + width/2, offsetY - height]);
-  vertices.push([offsetX, offsetY - height]);
-  vertices.push([offsetX, offsetY - height/2]);
+  vertices.push([offsetX, offsetY, 0]);
+  vertices.push([offsetX + width/2, offsetY, 0]);
+  vertices.push([offsetX + width, offsetY, 0]);
+  vertices.push([offsetX + width, offsetY - height/2, 0]);
+  vertices.push([offsetX + width, offsetY - height, 0]);
+  vertices.push([offsetX + width/2, offsetY - height, 0]);
+  vertices.push([offsetX, offsetY - height, 0]);
+  vertices.push([offsetX, offsetY - height/2, 0]);
 
   // Generate additional randomly placed points on the perimeter
   for (var i = 6; i >= 0; i--) {
-    vertices.push([ offsetX + Math.random()*width, offsetY]);
-    vertices.push([ offsetX, offsetY - Math.random()*height]);
-    vertices.push([ offsetX + width, offsetY - Math.random()*height]);
-    vertices.push([ offsetX + Math.random()*width, offsetY-height]);
+    vertices.push([ offsetX + Math.random()*width, offsetY, 0]);
+    vertices.push([ offsetX, offsetY - Math.random()*height, 0]);
+    vertices.push([ offsetX + width, offsetY - Math.random()*height, 0]);
+    vertices.push([ offsetX + Math.random()*width, offsetY-height, 0]);
   }
 
   // Create an array of triangulated coordinates from our vertices
@@ -801,16 +802,25 @@ FSS.Plane = function(width, height, howmany) {
 
   for(i = triangles.length; i; ) {
     --i;
-    v1 = new FSS.Vertex(Math.ceil(vertices[triangles[i]][0]), Math.ceil(vertices[triangles[i]][1]));
+    v1 = new FSS.Vertex(Math.ceil(vertices[triangles[i]][0]), Math.ceil(vertices[triangles[i]][1]), Math.ceil(vertices[triangles[i]][2]));
     --i;
-    v2 = new FSS.Vertex(Math.ceil(vertices[triangles[i]][0]), Math.ceil(vertices[triangles[i]][1]));
+    v2 = new FSS.Vertex(Math.ceil(vertices[triangles[i]][0]), Math.ceil(vertices[triangles[i]][1]), Math.ceil(vertices[triangles[i]][2]));
     --i;
-    v3 = new FSS.Vertex(Math.ceil(vertices[triangles[i]][0]), Math.ceil(vertices[triangles[i]][1]));
+    v3 = new FSS.Vertex(Math.ceil(vertices[triangles[i]][0]), Math.ceil(vertices[triangles[i]][1]), Math.ceil(vertices[triangles[i]][2]));
     t1 = new FSS.Triangle(v1,v2,v3);
     this.triangles.push(t1);
     this.vertices.push(v1);
     this.vertices.push(v2);
     this.vertices.push(v3);
+  }
+
+
+  for(i = 0; i < this.triangles.length; i++) {
+    // document.getElementById("obj-output").innerHTML += "<p>more content</p>hello<br>";
+    document.getElementById("obj-output").innerHTML += "v " + this.triangles[i].a.position[0] + " " + this.triangles[i].a.position[1] + " " + this.triangles[i].a.position[2] + "<br>";
+    document.getElementById("obj-output").innerHTML += "v " + this.triangles[i].b.position[0] + " " + this.triangles[i].b.position[1] + " " + this.triangles[i].b.position[2] + "<br>";
+    document.getElementById("obj-output").innerHTML += "v " + this.triangles[i].c.position[0] + " " + this.triangles[i].c.position[1] + " " + this.triangles[i].c.position[2] + "<br>";
+    document.getElementById("obj-output").innerHTML += "f -3 -2 -1<br>";
   }
 };
 
@@ -2053,6 +2063,11 @@ c);e.bind(this.domElement,"transitionend",c);e.bind(this.domElement,"oTransition
     controller = exportFolder.add(EXPORT, 'exportCurrent').name('export this');
 
   }
+
+  $("#obj-output").bind("click", function(e) {
+    $("#container").hide();
+    $("#controls").hide();
+  });
 
   function toggleEl(id) {
     var e = document.getElementById(id);
